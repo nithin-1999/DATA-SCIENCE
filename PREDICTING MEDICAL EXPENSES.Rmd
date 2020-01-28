@@ -1,0 +1,119 @@
+---
+title: "MEDICAL EXPENSES PREDICTION"
+author: "NITHIN C"
+date: "22/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+#This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+#When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r }
+library(ggplot2)
+library(dplyr)
+library(Hmisc)
+library(cowplot)
+library(WVPlots)
+```
+```{r }
+set.seed(123)
+data<-read.csv("insurancce.csv",header=T)
+sample_n(Data,5)
+describe(Data)
+```
+
+
+```{r }
+x<-ggplot(Data,aes(age,charges))+geom_jitter(color="blue",alpha=.5)+theme_light()
+
+y<-ggplot(Data,aes(bmi,charges))+geom_jitter(color="green",alpha=.5)+theme_light()
+
+p<-plot_grid(x,y)
+title<- ggdraw()+draw_label("CORR BW CHARGES AND BMI")
+
+plot_grid(title,p,ncol=1,rel_heights=c(.1,1))
+```
+
+```{r }
+x<-ggplot(Data,aes(sex,charges))+geom_jitter(aes(color=sex),alpha=.7)+theme_light()
+y<-ggplot(Data,aes(children,charges))+geom_jitter(aes(color=children),alpha=.7)+theme_light()
+
+p<- plot_grid(x,y)
+title<- ggdraw()+draw_label("CORR BW CHARGES AND children")
+plot_grid(title,p,ncol=1,rel_heights=c(.1,1))
+
+x<-ggplot(Data,aes(smoker,charges))+geom_jitter(aes(color=smoker),alpha=.7)+theme_light()
+y<-ggplot(Data,aes(region,charges))+geom_jitter(aes(color=region),alpha=.7)+theme_light()
+
+p<-plot_grid(x,y)
+title<- ggdraw()+draw_label("CORR BW CHARGES AND smoker")
+plot_grid(title,p,ncol=1,rel_heights=c(.1,1))
+```
+
+```{r }
+
+n_train <- round(0.8 * nrow(Data))
+ train_indices <- sample(1:nrow(Data), n_train)
+Data_train <- Data[train_indices, ]
+ Data_test <- Data[-train_indices, ]
+ formula_0 <- as.formula("charges ~ age + sex + bmi + children + smoker + region")
+ model_0 <- lm(formula_0, data = Data_train)
+ summary(model_0)
+ ```
+ 
+ ```{r }
+ r_sq_1 <- summary(model_1)$r.squared
+prediction_1 <- predict(model_1, newdata = Data_test)
+ residuals_1 <- Data_test$charges - prediction_1
+ rmse_1 <- sqrt(mean(residuals_1^2))
+ print(paste0("R-squared for first model:", round(r_sq_0, 4)))
+  print(paste0("R-squared for new model: ", round(r_sq_1, 4)))
+ print(paste0("RMSE for first model: ", round(rmse_0, 2)))
+ print(paste0("RMSE for new model: ", round(rmse_1, 2)))
+ ```
+ 
+ ```
+ 
+
+```{r }
+ Data_test$prediction <- predict(model_1, newdata = Data_test)
+ 
+ ggplot(Data_test, aes(x = prediction, y = charges)) +
++ geom_point(color = "blue", alpha = 0.7) +
++ geom_abline(color = "red") +
++ ggtitle("Prediction vs. Real values")
+ ```
+ ```
+
+ Data_test$residuals <- Data_test$charges - Data_test$prediction
+ ggplot(data = Data_test, aes(x = prediction, y = residuals)) +
++ geom_hline(yintercept = 0, linetype = 3, color = "red") +
++ ggtitle("Residuals vs. Linear model prediction")
+ 
+  ggplot(Data_test, aes(x = residuals)) +
++ geom_histogram(bins = 15, fill = "blue") +
++ ggtitle("Histogram of residuals")
+  
+  Bob <- data.frame(age = 19,
++ bmi = 27.9,
++ children = 0,
++ smoker = "yes",
++ print(paste0("Health care charges for Bob: ", round(predict(model_1, Bob), 2)))
+
+ Bob <- data.frame(age = 19,
++ bmi = 27.9,
++ children = 0,
++ smoker = "no",
++ region = "northwest")
+ print(paste0("Health care charges for Bob: ", round(predict(model_1, Bob), 2)))
+
+prediction_1 <- predict(model_1, newdata = Data_test)
+summary(prediction_1)
+```
